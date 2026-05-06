@@ -273,6 +273,478 @@ button { cursor: pointer; font-family: var(--font); border: none; background: no
 .search-bar__close:hover { color: var(--clr-text); }
 
 /* ============================================
+   ACCOUNT DROPDOWN (CSS-only)
+   ============================================ */
+.account-menu {
+  position: relative;
+}
+
+/* Show dropdown on hover OR when focus is inside the menu */
+.account-menu:hover .account-dropdown,
+.account-menu:focus-within .account-dropdown {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.account-trigger {
+  /* inherits .icon-btn styles */
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  width: 240px;
+  background: rgba(17, 17, 24, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(124, 58, 237, 0.08);
+  padding: 8px;
+  z-index: 1100;
+
+  /* Hidden state */
+  opacity: 0;
+  transform: translateY(-10px) scale(0.97);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.22s;
+  transform-origin: top right;
+}
+
+/* Small arrow caret pointing up */
+.account-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 14px;
+  width: 12px;
+  height: 12px;
+  background: rgba(17, 17, 24, 0.97);
+  border-top: 1px solid var(--clr-border);
+  border-left: 1px solid var(--clr-border);
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+/* User info header */
+.account-dropdown__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 14px;
+}
+
+.account-dropdown__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+}
+
+.account-dropdown__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--clr-text);
+  line-height: 1.3;
+}
+
+.account-dropdown__email {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+}
+
+/* Divider */
+.account-dropdown__divider {
+  height: 1px;
+  background: var(--clr-border);
+  margin: 4px 0;
+}
+
+/* Menu items */
+.account-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--clr-text-muted);
+  transition: background var(--transition), color var(--transition);
+  cursor: pointer;
+}
+
+.account-dropdown__item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+.account-dropdown__item:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--clr-primary-light);
+}
+
+.account-dropdown__item:hover svg {
+  opacity: 1;
+}
+
+/* Danger variant — Logout */
+.account-dropdown__item--danger {
+  color: var(--clr-text-dim);
+}
+
+.account-dropdown__item--danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* ============================================
+   LOGIN MODAL (CSS :target — zero JS)
+   ============================================ */
+
+/* The modal wrapper is hidden by default; :target makes it visible */
+.login-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  padding: 20px;
+
+  /* Hidden state */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.3s;
+}
+
+/* Visible when open */
+.login-modal--open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Backdrop overlay — clicking it navigates to # (closes modal) */
+.login-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+/* Modal card */
+.login-modal__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(17, 17, 26, 0.98);
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px 32px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04);
+
+  /* Entrance animation driven by :target */
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.login-modal--open .login-modal__box {
+  transform: translateY(0) scale(1);
+}
+
+/* Glowing top edge */
+.login-modal__box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.7), transparent);
+}
+
+/* Close button */
+.login-modal__close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--clr-border);
+  transition: all var(--transition);
+}
+.login-modal__close:hover {
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.3);
+}
+
+/* Header */
+.login-modal__header { text-align: center; margin-bottom: 24px; }
+
+.login-modal__logo-mark {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: var(--clr-primary-light);
+}
+
+.login-modal__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  margin-bottom: 6px;
+}
+
+.login-modal__subtitle {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+}
+
+/* Social buttons */
+.login-modal__socials {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.login-modal__social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--clr-border);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--clr-text);
+  transition: all var(--transition);
+}
+.login-modal__social-btn:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+
+/* Divider */
+.login-modal__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  color: var(--clr-text-dim);
+  font-size: 0.75rem;
+}
+.login-modal__divider::before,
+.login-modal__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--clr-border);
+}
+
+/* Form */
+.login-modal__form { display: flex; flex-direction: column; gap: 16px; }
+
+.login-modal__field { display: flex; flex-direction: column; gap: 6px; }
+
+.login-modal__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  letter-spacing: 0.02em;
+}
+
+.login-modal__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-modal__forgot {
+  font-size: 0.78rem;
+  color: var(--clr-primary-light);
+  transition: color var(--transition);
+}
+.login-modal__forgot:hover { color: var(--clr-accent); }
+
+/* Input with icon */
+.login-modal__input-wrap {
+  position: relative;
+}
+.login-modal__input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-text-dim);
+  pointer-events: none;
+}
+.login-modal__input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  color: var(--clr-text);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.login-modal__input::placeholder { color: var(--clr-text-dim); }
+.login-modal__input:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Remember me checkbox */
+.login-modal__remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.83rem;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+}
+.login-modal__remember input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--clr-primary);
+  cursor: pointer;
+}
+
+/* Submit button */
+.login-modal__submit {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.45);
+  transition: all var(--transition);
+  margin-top: 4px;
+}
+.login-modal__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+}
+.login-modal__submit:active { transform: translateY(0); }
+
+/* Loading state */
+.login-modal__submit--loading {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3) !important;
+  background: linear-gradient(135deg, #6d28d9 0%, #be185d 100%);
+  position: relative;
+  overflow: hidden;
+}
+.login-modal__submit--loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.2s infinite;
+  background-size: 200% 100%;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Alert banners */
+.login-modal__alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.4;
+  animation: alert-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes alert-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.login-modal__alert svg { flex-shrink: 0; }
+
+/* Success */
+.login-modal__alert--success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+/* Error */
+.login-modal__alert--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* Sign-up link */
+.login-modal__signup {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--clr-text-muted);
+  margin-top: 20px;
+}
+.login-modal__signup a {
+  color: var(--clr-primary-light);
+  font-weight: 600;
+  transition: color var(--transition);
+}
+.login-modal__signup a:hover { color: var(--clr-accent); }
+
+/* ============================================
    HERO
    ============================================ */
 .hero {
@@ -503,7 +975,7 @@ button { cursor: pointer; font-family: var(--font); border: none; background: no
 .product-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.5s ease;
 }
 .product-card:hover .product-card__image { transform: scale(1.05); }
